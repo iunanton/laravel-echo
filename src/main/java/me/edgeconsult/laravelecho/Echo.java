@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 
 public class Echo {
     private URI uri;
+    private IO.Options opts;
     private Socket socket;
 
     public Echo(String uri) throws URISyntaxException {
@@ -40,10 +41,11 @@ public class Echo {
     public Echo(URI uri, IO.Options opts) {
         //main method
         this.uri = uri;
+        this.opts = opts;
     }
 
     public void connect(Emitter.Listener success, Emitter.Listener error) {
-        socket = IO.socket(uri);
+        socket = IO.socket(uri, opts);
         if (success != null) {
             socket.on(Socket.EVENT_CONNECT, success);
         }
