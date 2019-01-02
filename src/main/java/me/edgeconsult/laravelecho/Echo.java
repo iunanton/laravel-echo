@@ -2,7 +2,8 @@ package me.edgeconsult.laravelecho;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
+import me.edgeconsult.laravelecho.channel.SocketIOChannel;
+import me.edgeconsult.laravelecho.connector.SocketIOConnector;
 import okhttp3.OkHttpClient;
 
 import javax.net.ssl.SSLContext;
@@ -22,37 +23,26 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Echo {
-    private URI uri;
-    private IO.Options opts;
-    private Socket socket;
+    private SocketIOConnector connector;
 
-    public Echo(String uri) throws URISyntaxException {
-        this(uri, null);
+    public Echo(EchoOptions options) {
+        connector = new SocketIOConnector(options);
     }
 
-    public Echo(String uri, IO.Options opts) throws URISyntaxException {
-        this(new URI(uri), null);
+    public void connect(EchoCallback success, EchoCallback error) {
+        connector.connect(success, error);
     }
 
-    public Echo(URI uri) {
-        this(uri, null);
+    public SocketIOChannel channel(String channel) {
+        return (SocketIOChannel) connector.channel(channel);
     }
 
-    public Echo(URI uri, IO.Options opts) {
-        //main method
-        this.uri = uri;
-        this.opts = opts;
+    public boolean isConnected() {
+        return connector.isConnected();
     }
 
-    public void connect(Emitter.Listener success, Emitter.Listener error) {
-        socket = IO.socket(uri, opts);
-        if (success != null) {
-            socket.on(Socket.EVENT_CONNECT, success);
-        }
-        if (error != null) {
-            socket.on(Socket.EVENT_ERROR, error);
-        }
-        socket.connect();
+    public void disconnect() {
+        connector.disconnect();
     }
 
     public static void main(String args[]) {
@@ -60,7 +50,7 @@ public class Echo {
 
         SSLContext sslContext;
         TrustManager[] trustManagers;
-        IO.Options opts;
+        IO.Options socketOpts;
 
         Handler handlerObj = new ConsoleHandler();
         handlerObj.setLevel(Level.ALL);
@@ -100,17 +90,18 @@ public class Echo {
         IO.setDefaultOkHttpWebSocketFactory(okHttpClient);
         IO.setDefaultOkHttpCallFactory(okHttpClient);
 
-        opts = new IO.Options();
-        opts.callFactory = okHttpClient;
-        opts.webSocketFactory = okHttpClient;
-
-
+        socketOpts = new IO.Options();
+        socketOpts.callFactory = okHttpClient;
+        socketOpts.webSocketFactory = okHttpClient;
 
         try {
-            Echo echo = new Echo("http://localhost:6001", opts);
+            EchoOptions options = new EchoOptions("http://localhost:6001", socketOpts);
+            Echo echo = new Echo(options);
             echo.connect(
                     (Object... objects) -> System.out.println("Connected"),
                     (Object... objects) -> System.out.println("Error"));
+            SocketIOChannel channel = echo.channel("test-event");
+            channel.listen("MessagePushed", (Object... objects) -> System.out.println("MessagePushed"));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
