@@ -1,6 +1,7 @@
 package me.edgeconsult.laravelecho;
 
 import io.socket.client.IO;
+import org.json.JSONObject;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -16,6 +17,7 @@ public class EchoOptions {
 
     private EchoOptions() throws URISyntaxException {
         headers = new HashMap<>();
+        headers.put("Authorization", "Bearer l44PvNGfmliIUhX53Ow0EMb0CgVqnxkJfoT9yP7Q6iXZeZxMv0fLT8jjpUVC");
         //authEndpoint = "/broadcasting/auth";
         eventNamespace = "App.Events";
     }
@@ -48,7 +50,7 @@ public class EchoOptions {
         return eventNamespace;
     }
 
-/*    public JSONObject getAuth() throws Exception {
+    public JSONObject getAuth() throws Exception {
         JSONObject auth = new JSONObject();
         JSONObject headers = new JSONObject();
 
@@ -59,6 +61,6 @@ public class EchoOptions {
         auth.put("headers", headers);
 
         return auth;
-    }*/
+    }
 
 }

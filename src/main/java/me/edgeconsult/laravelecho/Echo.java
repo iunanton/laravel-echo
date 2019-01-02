@@ -98,10 +98,12 @@ public class Echo {
             EchoOptions options = new EchoOptions("http://localhost:6001", socketOpts);
             Echo echo = new Echo(options);
             echo.connect(
-                    (Object... objects) -> System.out.println("Connected"),
+                    (Object... objects) -> System.out.println("Connected: " + echo.connector.socketID()),
                     (Object... objects) -> System.out.println("Error"));
-            SocketIOChannel channel = echo.channel("test-event");
-            channel.listen("MessagePushed", (Object... objects) -> System.out.println("MessagePushed"));
+            //SocketIOChannel channel = echo.channel("test-event");
+            //channel.listen("MessagePushed", (Object... objects) -> System.out.println("MessagePushed"));
+            SocketIOChannel channel = echo.channel("private-user.1");
+            channel.listen("PrivateEvent", (Object... objects) -> System.out.println("PrivateEvent\n"));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

@@ -31,6 +31,7 @@ public class SocketIOChannel extends AbstractChannel {
         JSONObject object = new JSONObject();
         try {
             object.put("channel", name);
+            object.put("auth", options.getAuth());
             if (callback == null) {
                 socket.emit("subscribe", object);
             } else {
@@ -46,6 +47,7 @@ public class SocketIOChannel extends AbstractChannel {
         JSONObject object = new JSONObject();
         try {
             object.put("channel", name);
+            object.put("auth", options.getAuth());
             if (callback == null) {
                 socket.emit("unsubscribe", object);
             } else {

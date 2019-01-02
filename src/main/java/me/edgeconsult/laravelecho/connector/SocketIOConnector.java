@@ -63,4 +63,8 @@ public class SocketIOConnector extends AbstractConnector {
         socket.disconnect();
 
     }
+
+    public String socketID() {
+        return socket.id();
+    }
 }
